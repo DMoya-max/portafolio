@@ -79,32 +79,21 @@ export function ContactForm() {
     setFeedback("");
 
     try {
-      const response = await fetch(`https://formsubmit.co/ajax/${CONTACT_EMAIL}`, {
+      const response = await fetch("/api/contact", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json",
-        },
-        body: JSON.stringify({
-          name: result.data.nombre,
-          email: result.data.email,
-          subject: result.data.asunto,
-          message: result.data.mensaje,
-        }),
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(result.data),
       });
-      const data: { success?: string | boolean; message?: string } = await response
-        .json()
-        .catch(() => ({}));
-      const delivered = data.success === "true" || data.success === true;
+      const data: { ok?: boolean; message?: string } = await response.json();
 
-      if (!response.ok || !delivered) {
+      if (!response.ok || !data.ok) {
         setStatus("error");
         setFeedback(data.message ?? "No fue posible enviar el mensaje. Intenta de nuevo.");
         return;
       }
 
       setStatus("success");
-      setFeedback("¡Mensaje enviado correctamente! Te responderé pronto.");
+      setFeedback(data.message ?? "¡Mensaje enviado correctamente!");
       setValues(EMPTY_VALUES);
       setTouched({});
       setSubmitted(false);
@@ -112,7 +101,7 @@ export function ContactForm() {
     } catch {
       setStatus("error");
       setFeedback(
-        "No se pudo conectar con el servicio de correo. Revisa tu conexión e inténtalo de nuevo.",
+        "No se pudo conectar con el servidor de correo. Revisa tu conexión e inténtalo de nuevo.",
       );
     }
   };
