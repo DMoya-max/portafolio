@@ -32,9 +32,9 @@ jobs:
 
       - name: Build static site
         run: npm run build
-        env:
-          # Usa /Portafolio-Moya si el repositorio se renombra a ese nombre.
-          NEXT_PUBLIC_BASE_PATH: /portafolio
+
+      - name: Disable Jekyll
+        run: touch out/.nojekyll
 
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v5
