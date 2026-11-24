@@ -3,7 +3,7 @@ import { CONTACT_EMAIL, GITHUB_URL } from "@/lib/data";
 
 export function Footer() {
   return (
-    <footer className="relative border-t border-edge/60 bg-obsidian py-10">
+    <footer className="relative z-20 border-t border-edge/60 bg-transparent py-10">
       <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-5 px-5 text-center sm:flex-row sm:px-8 sm:text-left">
         <div>
           <p className="text-sm font-medium text-smoke">Daniel Jose Moya Quiroz</p>

@@ -35,6 +35,8 @@ const FIELDS: { name: FieldName; label: string; placeholder: string; type: strin
   { name: "asunto", label: "Asunto", placeholder: "¿De qué quieres hablar?", type: "text" },
 ];
 
+const FIELD_LABEL = "mb-2 block font-mono text-xs uppercase tracking-wider text-zinc-400";
+
 export function ContactForm() {
   const [values, setValues] = useState<FormValues>(EMPTY_VALUES);
   const [touched, setTouched] = useState<Partial<Record<FieldName, boolean>>>({});
@@ -77,21 +79,32 @@ export function ContactForm() {
     setFeedback("");
 
     try {
-      const response = await fetch("/api/contact", {
+      const response = await fetch(`https://formsubmit.co/ajax/${CONTACT_EMAIL}`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(result.data),
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        body: JSON.stringify({
+          name: result.data.nombre,
+          email: result.data.email,
+          subject: result.data.asunto,
+          message: result.data.mensaje,
+        }),
       });
-      const data: { ok?: boolean; message?: string } = await response.json();
+      const data: { success?: string | boolean; message?: string } = await response
+        .json()
+        .catch(() => ({}));
+      const delivered = data.success === "true" || data.success === true;
 
-      if (!response.ok || !data.ok) {
+      if (!response.ok || !delivered) {
         setStatus("error");
         setFeedback(data.message ?? "No fue posible enviar el mensaje. Intenta de nuevo.");
         return;
       }
 
       setStatus("success");
-      setFeedback(data.message ?? "¡Mensaje enviado correctamente!");
+      setFeedback("¡Mensaje enviado correctamente! Te responderé pronto.");
       setValues(EMPTY_VALUES);
       setTouched({});
       setSubmitted(false);
@@ -99,16 +112,14 @@ export function ContactForm() {
     } catch {
       setStatus("error");
       setFeedback(
-        "No se pudo conectar con el servidor de correo. Revisa tu conexión e inténtalo de nuevo.",
+        "No se pudo conectar con el servicio de correo. Revisa tu conexión e inténtalo de nuevo.",
       );
     }
   };
 
   const fieldClass = (field: FieldName) =>
-    `min-h-[44px] w-full rounded-md border bg-obsidian/70 px-4 py-3 text-base text-smoke outline-none transition-all placeholder:text-steel/35 focus:border-ruby/70 focus:ring-2 focus:ring-ruby/15 ${
-      (touched[field] || submitted) && errors[field]
-        ? "border-ruby/80"
-        : "border-edge"
+    `min-h-[44px] w-full rounded-lg border border-zinc-800 bg-[#09090B] px-4 py-3 text-base text-zinc-100 outline-none transition-all duration-200 placeholder:text-zinc-600 focus:border-red-500/70 focus:ring-1 focus:ring-red-500/30 ${
+      (touched[field] || submitted) && errors[field] ? "border-red-500/70" : ""
     }`;
 
   const showError = (field: FieldName) =>
@@ -127,22 +138,31 @@ export function ContactForm() {
   };
 
   return (
-    <div className="glass relative rounded-2xl p-6 sm:p-8">
-      <div className="mb-7 flex items-center justify-between">
+    <div className="relative overflow-hidden rounded-2xl border-b border-l border-r border-zinc-800/90 border-t-2 border-t-red-500/70 bg-[#121215]/95 p-6 shadow-[0_12px_35px_rgba(0,0,0,0.45)] backdrop-blur-md sm:p-8">
+      <div
+        className="pointer-events-none absolute -right-16 -top-16 h-48 w-48 rounded-full bg-[radial-gradient(circle,rgba(220,38,38,0.16),transparent_70%)] opacity-60"
+        aria-hidden="true"
+      />
+
+      <div className="relative mb-7 flex items-start justify-between gap-4">
         <div>
-          <h3 className="text-xl font-semibold text-smoke">Envíame un mensaje</h3>
-          <p className="mt-1 text-xs text-steel">Respuesta usualmente en menos de 48 h.</p>
+          <span className="inline-flex items-center gap-2 font-mono text-[11px] uppercase tracking-[0.18em] text-ruby/80">
+            <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-red-400 shadow-[0_0_8px_rgba(239,68,68,0.9)]" />
+            {"// ENVIAR MENSAJE DIRECTO"}
+          </span>
+          <h3 className="mt-3 text-xl font-semibold text-smoke">Envíame un mensaje</h3>
+          <p className="mt-1 text-xs text-zinc-400">Respuesta usualmente en menos de 48 h.</p>
         </div>
-        <span className="flex h-10 w-10 items-center justify-center rounded-lg border border-ruby/30 bg-ruby/10 text-ruby">
-          <Send size={17} />
+        <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg border border-red-500/30 bg-gradient-to-br from-red-500/20 to-red-950/40 text-red-400 shadow-[0_0_15px_rgba(220,38,38,0.18)]">
+          <Send size={18} />
         </span>
       </div>
 
-      <form onSubmit={handleSubmit} noValidate className="space-y-5">
+      <form onSubmit={handleSubmit} noValidate className="relative space-y-5">
         <div className="grid gap-5 sm:grid-cols-2">
           {FIELDS.slice(0, 2).map((field) => (
             <div key={field.name}>
-              <label htmlFor={field.name} className="mb-2 block font-mono text-[10px] uppercase tracking-[0.18em] text-steel">
+              <label htmlFor={field.name} className={FIELD_LABEL}>
                 {field.label}
               </label>
               <input
@@ -163,7 +183,7 @@ export function ContactForm() {
         </div>
 
         <div>
-          <label htmlFor="asunto" className="mb-2 block font-mono text-[10px] uppercase tracking-[0.18em] text-steel">
+          <label htmlFor="asunto" className={FIELD_LABEL}>
             Asunto
           </label>
           <input
@@ -182,10 +202,10 @@ export function ContactForm() {
 
         <div>
           <div className="mb-2 flex items-center justify-between">
-            <label htmlFor="mensaje" className="font-mono text-[10px] uppercase tracking-[0.18em] text-steel">
+            <label htmlFor="mensaje" className="font-mono text-xs uppercase tracking-wider text-zinc-400">
               Mensaje
             </label>
-            <span className="font-mono text-[10px] text-steel/50">
+            <span className="font-mono text-[10px] text-zinc-500">
               {values.mensaje.length}/2000
             </span>
           </div>
@@ -220,12 +240,12 @@ export function ContactForm() {
         <button
           type="submit"
           disabled={status === "loading"}
-          className="inline-flex min-h-[48px] w-full items-center justify-center gap-2.5 rounded-md bg-gradient-to-r from-red-700 via-ruby to-red-700 px-5 py-3.5 text-base font-semibold text-white shadow-[0_12px_36px_-14px_rgba(220,38,38,0.95)] transition-all hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-70 disabled:hover:translate-y-0"
+          className="flex min-h-[48px] w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-red-700 to-red-600 px-6 py-3 font-medium text-white shadow-[0_0_20px_rgba(220,38,38,0.25)] transition-all duration-300 hover:from-red-600 hover:to-red-500 hover:shadow-[0_0_28px_rgba(220,38,38,0.45)] disabled:cursor-not-allowed disabled:opacity-70 disabled:hover:from-red-700 disabled:hover:to-red-600"
         >
           {status === "loading" ? (
             <>
               <Loader2 size={17} className="animate-spin" />
-              Enviando mensaje...
+              Enviando...
             </>
           ) : (
             <>
@@ -242,10 +262,10 @@ export function ContactForm() {
               initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -8 }}
-              className={`flex items-start gap-2.5 rounded-md border px-4 py-3 text-sm ${
+              className={`flex items-start gap-2.5 rounded-xl border px-4 py-3 text-sm ${
                 status === "success"
-                  ? "border-emerald-800/60 bg-emerald-950/30 text-emerald-200"
-                  : "border-ruby/40 bg-ruby/10 text-red-200"
+                  ? "border-emerald-700/50 bg-emerald-950/40 text-emerald-200"
+                  : "border-red-600/50 bg-red-950/40 text-red-200"
               }`}
               role="status"
               aria-live="polite"
@@ -253,7 +273,7 @@ export function ContactForm() {
               {status === "success" ? (
                 <CheckCircle2 size={17} className="mt-0.5 shrink-0 text-emerald-400" />
               ) : (
-                <TriangleAlert size={17} className="mt-0.5 shrink-0 text-ruby" />
+                <TriangleAlert size={17} className="mt-0.5 shrink-0 text-red-400" />
               )}
               <span className="leading-relaxed">{feedback}</span>
             </motion.div>
@@ -261,20 +281,20 @@ export function ContactForm() {
         </AnimatePresence>
       </form>
 
-      <div className="mt-6 flex flex-wrap items-center gap-3 border-t border-edge/70 pt-5">
-        <span className="font-mono text-[10px] uppercase tracking-[0.18em] text-steel/60">
+      <div className="relative mt-6 flex flex-wrap items-center gap-3 border-t border-zinc-800/80 pt-5">
+        <span className="font-mono text-[10px] uppercase tracking-[0.18em] text-zinc-500">
           Correo directo
         </span>
-        <a href={`mailto:${CONTACT_EMAIL}`} className="text-xs text-smoke transition-colors hover:text-ruby">
+        <a href={`mailto:${CONTACT_EMAIL}`} className="text-xs text-zinc-200 transition-colors hover:text-red-400">
           {CONTACT_EMAIL}
         </a>
         <button
           type="button"
           onClick={copyEmail}
-          className="inline-flex min-h-[44px] items-center gap-1.5 rounded border border-edge px-3 py-2 font-mono text-[11px] text-steel transition-colors hover:border-ruby hover:text-smoke"
+          className="inline-flex min-h-[40px] items-center gap-1.5 rounded-lg border border-red-500/30 bg-red-950/25 px-3 py-1.5 font-mono text-[11px] text-zinc-300 transition-all duration-300 hover:border-red-500/60 hover:text-white"
         >
-          {copied ? <CheckCircle2 size={12} className="text-emerald-400" /> : <Copy size={12} />}
-          {copied ? "Copiado" : "Copiar correo"}
+          {copied ? <CheckCircle2 size={13} className="text-emerald-400" /> : <Copy size={13} />}
+          {copied ? "¡Copiado!" : "Copiar correo"}
         </button>
       </div>
     </div>

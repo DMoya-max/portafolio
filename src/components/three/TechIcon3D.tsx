@@ -1,27 +1,28 @@
 "use client";
 
-import { Float } from "@react-three/drei";
-import { useFrame } from "@react-three/fiber";
-import { useEffect, useMemo, useRef } from "react";
+import { useEffect, useMemo } from "react";
 import * as THREE from "three";
 import { SVGLoader } from "three/examples/jsm/loaders/SVGLoader.js";
-import { brandPaths } from "@/lib/brand-paths";
+import { getBrandPaths } from "@/lib/brand-paths";
 
 type IconPart = {
   geometry: THREE.ExtrudeGeometry;
   useAccent: boolean;
 };
 
-function createExtrudedIcon(pathData: string): IconPart[] {
+function createExtrudedIcon(iconKey: string): IconPart[] {
   const loader = new SVGLoader();
-  const parsed = loader.parse(
-    `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="${pathData}" /></svg>`,
-  );
+  const pathData = getBrandPaths(iconKey);
+  const isMobile = iconKey === "reactnative";
 
-  const shapes: THREE.Shape[] = [];
-  for (const path of parsed.paths) {
-    shapes.push(...SVGLoader.createShapes(path));
-  }
+  const shapeGroups = pathData.map((data) => {
+    const parsed = loader.parse(
+      `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="${data}" /></svg>`,
+    );
+    return parsed.paths.flatMap((path) => SVGLoader.createShapes(path));
+  });
+  const atomShapeCount = isMobile ? (shapeGroups[0]?.length ?? 0) : 0;
+  const shapes = shapeGroups.flat();
 
   const geometries = shapes.map(
     (shape) =>
@@ -37,10 +38,18 @@ function createExtrudedIcon(pathData: string): IconPart[] {
       }),
   );
 
-  for (const geometry of geometries) {
+  geometries.forEach((geometry, index) => {
+    if (isMobile) {
+      if (index < atomShapeCount) {
+        geometry.scale(0.56, 0.56, 0.56);
+        geometry.translate(5.28, 5.28, 0.45);
+      } else {
+        geometry.translate(0, 0, -0.45);
+      }
+    }
     geometry.scale(1, -1, 1);
     geometry.computeVertexNormals();
-  }
+  });
 
   const combined = new THREE.Box3();
   for (const geometry of geometries) {
@@ -58,7 +67,7 @@ function createExtrudedIcon(pathData: string): IconPart[] {
     geometry.scale(factor, factor, factor);
   }
 
-  return geometries.map((geometry) => {
+  return geometries.map((geometry, index) => {
     const box = new THREE.Box3().setFromBufferAttribute(
       geometry.getAttribute("position") as THREE.BufferAttribute,
     );
@@ -66,63 +75,41 @@ function createExtrudedIcon(pathData: string): IconPart[] {
     box.getSize(partSize);
     return {
       geometry,
-      useAccent: partSize.x * partSize.y < totalArea * 0.045,
+      useAccent: isMobile
+        ? index >= atomShapeCount
+        : partSize.x * partSize.y < totalArea * 0.045,
     };
   });
 }
 
-export function TechIcon3D({
-  iconKey,
-  hovered,
-}: {
-  iconKey: string;
-  hovered: boolean;
-}) {
-  const groupRef = useRef<THREE.Group>(null);
-  const path = brandPaths[iconKey] ?? "";
-  const parts = useMemo(() => createExtrudedIcon(path), [path]);
+export function TechIcon3D({ iconKey }: { iconKey: string }) {
+  const parts = useMemo(() => createExtrudedIcon(iconKey), [iconKey]);
 
   useEffect(
     () => () => parts.forEach((part) => part.geometry.dispose()),
     [parts],
   );
 
-  useFrame((state, delta) => {
-    const group = groupRef.current;
-    if (!group) return;
-
-    const targetY = (hovered ? 0.85 : 0.16) + state.pointer.x * (hovered ? 0.55 : 0.18);
-    const targetX = (hovered ? -0.22 : -0.08) - state.pointer.y * (hovered ? 0.38 : 0.12);
-
-    group.rotation.y = THREE.MathUtils.damp(group.rotation.y, targetY, 4.5, delta);
-    group.rotation.x = THREE.MathUtils.damp(group.rotation.x, targetX, 4.5, delta);
-    group.rotation.z += delta * (hovered ? 0.12 : 0.035);
-  });
-
   return (
     <>
-      <ambientLight intensity={0.55} />
-      <hemisphereLight args={["#ffffff", "#050505", 0.9]} />
-      <pointLight position={[3, 3, 5]} color="#FF4D4D" intensity={70} distance={18} />
-      <pointLight position={[-3, -2, 3]} color="#FFFFFF" intensity={30} distance={18} />
-      <pointLight position={[0, 1, -4]} color="#DC2626" intensity={22} distance={16} />
+      <ambientLight intensity={0.75} />
+      <directionalLight position={[2, 3, 4]} color="#ffffff" intensity={1.0} />
+      <pointLight position={[-2, -1, 3]} color="#DC2626" intensity={0.9} />
 
-      <Float speed={1.5} rotationIntensity={0.22} floatIntensity={0.5}>
-        <group ref={groupRef}>
-          {parts.map((part, index) => (
-            <mesh key={index} geometry={part.geometry}>
-              <meshStandardMaterial
-                color={part.useAccent ? "#18181B" : "#DC2626"}
-                metalness={0.72}
-                roughness={0.24}
-                emissive="#DC2626"
-                emissiveIntensity={0.09}
-                side={THREE.DoubleSide}
-              />
-            </mesh>
-          ))}
-        </group>
-      </Float>
+      <group rotation={[0, 0, 0]} scale={1.05}>
+        {parts.map((part, index) => (
+          <mesh key={index} geometry={part.geometry}>
+            <meshStandardMaterial
+              color={part.useAccent ? "#B91C1C" : "#71717A"}
+              metalness={0.55}
+              roughness={0.42}
+              emissive={part.useAccent ? "#7F1D1D" : "#000000"}
+              emissiveIntensity={part.useAccent ? 0.15 : 0}
+              side={THREE.DoubleSide}
+            />
+          </mesh>
+        ))}
+      </group>
     </>
   );
 }

@@ -9,14 +9,17 @@ const TechGrid = dynamic(() => import("./TechGrid").then((module) => module.Tech
     <div className="space-y-14">
       {techGroups.map((group) => (
         <div key={group.category}>
-          <div className="mb-5 font-mono text-sm uppercase tracking-[0.22em] text-smoke">
-            {group.category}
+          <div className="mb-5 flex items-center gap-4">
+            <span className="shrink-0 font-mono text-[11px] uppercase tracking-[0.18em] text-ruby/80">
+              {"// "}{group.category.toUpperCase()}
+            </span>
+            <span className="h-px flex-1 bg-gradient-to-r from-red-500/40 to-transparent" />
           </div>
-          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+          <div className="grid grid-cols-2 gap-5 sm:grid-cols-3 lg:grid-cols-4">
             {group.items.map((item) => (
               <div
                 key={item.name}
-                className="glass flex h-[184px] flex-col items-center justify-center rounded-xl"
+                className="flex h-[184px] flex-col items-center justify-center rounded-xl border-b border-l border-r border-zinc-800/90 border-t-2 border-t-red-500/70 bg-[#121215]/95"
               >
                 <div className="h-12 w-12 animate-pulse rounded-full bg-ruby/10" />
                 <p className="mt-4 text-[13px] text-steel">{item.name}</p>

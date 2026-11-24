@@ -3,6 +3,13 @@
 import { Mouse } from "lucide-react";
 import { useEffect, useRef } from "react";
 
+type RainMeta = {
+  x: number;
+  baseY: number;
+  speed: number;
+  alpha: number;
+};
+
 type Glyph = {
   x: number;
   y: number;
@@ -13,6 +20,7 @@ type Glyph = {
   color: string;
   size: number;
   bold?: boolean;
+  rain?: RainMeta;
 };
 
 type RasterizedParticle = {
@@ -30,6 +38,8 @@ const WEB_COLORS = ["#7F1D1D", "#991B1B", "#DC2626"];
 const FONT_STACK = "ui-monospace, SFMono-Regular, Menlo, monospace";
 const ENTRY_DURATION = 1800;
 const EXPLOSION_LIMIT = 0.85;
+const SPRITE_SIZE = 24;
+const RAIN_WRAP = 20;
 
 function randomChar() {
   return Math.random() > 0.5 ? "1" : "0";
@@ -211,7 +221,7 @@ function generateSpiderManBinaryParticles(width: number, height: number): Raster
 
   // 4. ESCANEAR PÍXELES ACTIVOS Y CONVERTIRLOS EN MATRIZ DE 0 Y 1
   const imageData = ctx.getImageData(0, 0, width, height).data;
-  const step = width < 640 ? 7 : 9;
+  const step = width < 640 ? 9 : 11;
   const particles: RasterizedParticle[] = [];
 
   for (let y = 0; y < height; y += step) {
@@ -268,9 +278,57 @@ function easeOutCubic(value: number) {
   return 1 - Math.pow(1 - value, 3);
 }
 
+function assignRain(glyphs: Glyph[], width: number, height: number) {
+  const colSpacing = width < 640 ? 38 : 48;
+  const totalCols = Math.max(1, Math.floor(width / colSpacing));
+  // El paso real se ajusta a width/totalCols para que la ultima columna
+  // llegue hasta el borde derecho sin dejar un margen sin lluvia.
+  const gap = width / totalCols;
+  const maxRain = totalCols * 16;
+  let i = 0;
+
+  for (let index = 0; index < glyphs.length && i < maxRain; index += 1) {
+    // Seleccion determinista del ~37.5% de los digitos.
+    if (index % 8 >= 3) continue;
+    const glyph = glyphs[index];
+    const colIndex = i % totalCols;
+    i += 1;
+
+    glyph.rain = {
+      x: colIndex * gap + gap * 0.5,
+      baseY: Math.random() * height,
+      speed: 0.4 + Math.random() * 0.7,
+      alpha: 0.1 + Math.random() * 0.12,
+    };
+    glyph.spin = 0;
+  }
+}
+
+function createDigitSprite(char: "0" | "1", muted = false) {
+  const sprite = document.createElement("canvas");
+  const dpr = Math.min(window.devicePixelRatio || 1, 1.75);
+  sprite.width = SPRITE_SIZE * dpr;
+  sprite.height = SPRITE_SIZE * dpr;
+
+  const ctx = sprite.getContext("2d");
+  if (!ctx) return sprite;
+
+  ctx.scale(dpr, dpr);
+  ctx.textAlign = "center";
+  ctx.textBaseline = "middle";
+  ctx.font = `bold 14px ${FONT_STACK}`;
+  ctx.fillStyle = muted ? "#991B1B" : "#EF4444";
+  ctx.shadowColor = muted ? "transparent" : "#DC2626";
+  ctx.shadowBlur = muted ? 0 : 8;
+  ctx.fillText(char, SPRITE_SIZE / 2, SPRITE_SIZE / 2);
+
+  return sprite;
+}
+
 export function BinarySpiderIntro() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const hintRef = useRef<HTMLDivElement>(null);
+  const targetProgress = useRef(0);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -278,13 +336,17 @@ export function BinarySpiderIntro() {
     const context = canvas.getContext("2d", { alpha: true });
     if (!context) return;
 
+    const sprite0 = createDigitSprite("0");
+    const sprite1 = createDigitSprite("1");
+    const rainSprite0 = createDigitSprite("0", true);
+    const rainSprite1 = createDigitSprite("1", true);
     const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     let width = 0;
     let height = 0;
     let fitScale = 1;
     let web: Glyph[] = [];
     let spider: Glyph[] = [];
-    let progress = 0;
+    let currentProgress = 0;
     let frame = 0;
     let animationId = 0;
     const mountedAt = performance.now();
@@ -301,13 +363,14 @@ export function BinarySpiderIntro() {
       fitScale = Math.min(1, (Math.min(width, height) * 0.76) / 470);
       web = buildWeb((Math.max(width, height) * 0.7) / fitScale);
       spider = toSpiderGlyphs(generateSpiderManBinaryParticles(width, height), width, height);
+      assignRain(spider, width, height);
     };
 
     const readScroll = () => {
-      const stage = document.getElementById("inicio");
+      const stage = document.getElementById("intro");
       if (!stage) return;
       const top = stage.getBoundingClientRect().top + window.scrollY;
-      progress = clamp((window.scrollY - top) / Math.max(window.innerHeight, 1));
+      targetProgress.current = clamp((window.scrollY - top) / Math.max(stage.offsetHeight, 1));
     };
 
     const onResize = () => {
@@ -318,10 +381,15 @@ export function BinarySpiderIntro() {
 
     resize();
     readScroll();
+    currentProgress = targetProgress.current;
     window.addEventListener("resize", onResize);
     window.addEventListener("scroll", onScroll, { passive: true });
 
     const render = (now: number) => {
+      currentProgress += (targetProgress.current - currentProgress) * 0.14;
+
+      const progress = currentProgress;
+      const frames = now / (1000 / 60);
       const centerX = width / 2;
       const centerY = height / 2;
       const entryRaw = reduceMotion ? 1 : clamp((now - mountedAt) / ENTRY_DURATION);
@@ -347,71 +415,71 @@ export function BinarySpiderIntro() {
       context.fillStyle = `rgba(9,9,11,${1 - reveal})`;
       context.fillRect(0, 0, width, height);
 
-      context.textAlign = "center";
-      context.textBaseline = "middle";
-
-      const draw = (
+      const drawGlyph = (
         glyph: Drawable,
-        originX: number,
-        originY: number,
-        targetX: number,
-        targetY: number,
+        x: number,
+        y: number,
         alpha: number,
-        glow: number,
-        minSize = 9,
+        spriteSize: number,
+        muted: boolean,
       ) => {
         if (alpha <= 0.01) return;
-        const x = centerX + originX + (targetX - originX) * burst;
-        const y = centerY + originY + (targetY - originY) * burst;
-        if (x < -60 || x > width + 60 || y < -60 || y > height + 60) return;
+        if (x < -40 || x > width + 40 || y < -40 || y > height + 40) return;
 
+        const sprite = glyph.char === "1"
+          ? (muted ? rainSprite1 : sprite1)
+          : (muted ? rainSprite0 : sprite0);
         context.globalAlpha = alpha;
-        context.fillStyle = glyph.color;
-        context.font = glyph.bold
-          ? `bold ${glyph.size}px monospace`
-          : `${Math.max(minSize, glyph.size * fitScale)}px ${FONT_STACK}`;
-        context.shadowColor = "#DC2626";
-        context.shadowBlur = glow;
 
-        if (burst > 0.02) {
+        const rotation = glyph.spin * burst;
+        if (Math.abs(rotation) > 0.002) {
           context.save();
           context.translate(x, y);
-          context.rotate(glyph.spin * burst);
-          context.fillText(glyph.char, 0, 0);
+          context.rotate(rotation);
+          context.drawImage(sprite, -spriteSize / 2, -spriteSize / 2, spriteSize, spriteSize);
           context.restore();
         } else {
-          context.fillText(glyph.char, x, y);
+          context.drawImage(sprite, x - spriteSize / 2, y - spriteSize / 2, spriteSize, spriteSize);
         }
       };
 
       for (const glyph of web) {
         const distance = Math.hypot(glyph.x, glyph.y);
         const woven = clamp((entry * Math.max(width, height) * 0.72 - distance * webScale * fitScale) / 90 + 0.25);
-        draw(
-          glyph,
-          glyph.x * webScale * fitScale,
-          glyph.y * webScale * fitScale,
-          glyph.ex * fitScale,
-          glyph.ey * fitScale,
-          0.42 * particleAlpha * woven,
-          0,
-        );
+        const originX = glyph.x * webScale * fitScale;
+        const originY = glyph.y * webScale * fitScale;
+        const x = centerX + originX + (glyph.ex * fitScale - originX) * burst;
+        const y = centerY + originY + (glyph.ey * fitScale - originY) * burst;
+        drawGlyph(glyph, x, y, 0.42 * particleAlpha * woven, Math.max(11, glyph.size * fitScale * 1.4), false);
       }
 
       for (const glyph of spider) {
-        draw(
-          glyph,
-          glyph.x * spiderScale,
-          glyph.y * spiderScale,
-          glyph.ex,
-          glyph.ey,
-          particleAlpha,
-          9 + burst * 10,
-        );
+        const originX = glyph.x * spiderScale;
+        const originY = glyph.y * spiderScale;
+
+        if (glyph.rain) {
+          const rain = glyph.rain;
+          const rainY =
+            ((rain.baseY + frames * rain.speed) % (height + RAIN_WRAP * 2)) - RAIN_WRAP;
+          // origin y rain son coordenadas absolutas del viewport: interpolar
+          // directamente evita sumar dos veces el centro de la pantalla.
+          const originAbsX = centerX + originX;
+          const originAbsY = centerY + originY;
+          const x = originAbsX + (rain.x - originAbsX) * burst;
+          const y = originAbsY + (rainY - originAbsY) * burst;
+          const alpha = 1 + (rain.alpha - 1) * burst;
+
+          if (burst < 0.999) drawGlyph(glyph, x, y, alpha * (1 - burst), SPRITE_SIZE, false);
+          if (burst > 0.001) drawGlyph(glyph, x, y, alpha * burst, SPRITE_SIZE, true);
+          continue;
+        }
+
+        const x = centerX + originX + (glyph.ex - originX) * burst;
+        const y = centerY + originY + (glyph.ey - originY) * burst;
+        drawGlyph(glyph, x, y, particleAlpha, SPRITE_SIZE, false);
       }
 
       context.globalAlpha = 1;
-      context.shadowBlur = 0;
 
       if (hintRef.current) {
         hintRef.current.style.opacity = String(1 - smoothstep(0.02, 0.18, progress));
@@ -430,8 +498,8 @@ export function BinarySpiderIntro() {
   }, []);
 
   return (
-    <div className="pointer-events-none absolute inset-0 z-20">
-      <canvas ref={canvasRef} className="block h-full w-full" />
+    <div className="pointer-events-none fixed inset-0 z-10 h-screen w-screen">
+      <canvas ref={canvasRef} className="block h-screen w-screen" />
       <div
         ref={hintRef}
         className="absolute inset-x-0 bottom-8 flex flex-col items-center gap-3 px-4 text-center sm:bottom-12"

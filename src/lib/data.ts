@@ -22,10 +22,11 @@ export const techGroups: TechGroup[] = [
     ],
   },
   {
-    category: "Frontend",
-    description: "Interfaces modernas, componentes y experiencias fluidas.",
+    category: "Frontend / Móvil",
+    description: "Interfaces modernas, componentes y experiencias fluidas en web y móvil.",
     items: [
       { name: "React", iconKey: "react", detail: "UI declarativa" },
+      { name: "React Native", iconKey: "reactnative", detail: "Apps móviles" },
       { name: "Next.js", iconKey: "nextdotjs", detail: "App Router" },
       { name: "JavaScript", iconKey: "javascript", detail: "ES6+" },
       { name: "TypeScript", iconKey: "typescript", detail: "Tipado estático" },
@@ -54,34 +55,14 @@ export const techGroups: TechGroup[] = [
   },
 ];
 
-export const processSteps = [
-  {
-    number: "01",
-    title: "Análisis y Modelado",
-    description:
-      "Levantamiento de requerimientos, arquitectura de software y diseño de esquemas SQL/NoSQL.",
-  },
-  {
-    number: "02",
-    title: "Desarrollo Backend & APIs",
-    description:
-      "Lógica de negocio robusta, autenticación segura (JWT/sesiones) e integración de servicios.",
-  },
-  {
-    number: "03",
-    title: "Interfaz React / Next.js",
-    description:
-      "Componentes modulares, diseño responsivo y animaciones fluidas orientadas a la experiencia de usuario.",
-  },
-  {
-    number: "04",
-    title: "Control de Versiones, Pruebas y Despliegue",
-    description:
-      "Flujos colaborativos con Git/GitHub, control de calidad y puesta en producción en la nube.",
-  },
-];
-
 export const education = [
+  {
+    role: "Bachiller Académico",
+    organization: "I.E. Ciudadela Nuevo Occidente",
+    description:
+      "Formación académica que consolidó bases sólidas de razonamiento lógico, comunicación y trabajo autónomo antes de ingresar a la formación técnica especializada.",
+    period: "Graduado el 26 de noviembre de 2024",
+  },
   {
     role: "Tecnólogo en Análisis y Desarrollo de Software (ADSO)",
     organization: "SENA · Centro de Formación en Diseño, Confección y Moda, Itagüí",
@@ -98,6 +79,21 @@ export const education = [
   },
 ];
 
+export const complementaryCourses = [
+  {
+    title: "Construcción de Bases de Datos MySQL",
+    subtitle: "Formación Técnica en Gestión y Modelado de Datos",
+    description:
+      "Diseño de esquemas relacionales, normalización, creación de tablas, llaves primarias/foráneas y consultas SQL estructuradas en MySQL.",
+  },
+  {
+    title: "Derechos Fundamentales para el Trabajo",
+    subtitle: "Formación Complementaria Laboral",
+    description:
+      "Conocimiento del marco normativo laboral, derechos fundamentales en el entorno profesional, ética y deberes en las relaciones de trabajo.",
+  },
+];
+
 export const projects = [
   {
     name: "SIGIF",
@@ -106,6 +102,7 @@ export const projects = [
       "Plataforma empresarial colaborativa para el control de inventarios, gestión de productos y procesos de facturación. Desarrollo de vistas y lógica backend, migración de controladores y respaldo de datos en la nube.",
     stack: ["Python", "Django", "Node.js", "MongoDB Atlas", "Git/GitHub"],
     kind: "dashboard" as const,
+    url: "https://sigif-final.vercel.app/",
   },
   {
     name: "Velvet Beauty",
@@ -114,6 +111,7 @@ export const projects = [
       "Aplicación web responsiva de catálogo digital para productos de belleza y cosmética con carrito de compras persistente, modal de confirmación e integración directa para pedidos por WhatsApp.",
     stack: ["HTML5", "CSS3", "JavaScript", "LocalStorage", "Netlify"],
     kind: "commerce" as const,
+    url: "https://velvetbeauty-catalogo.netlify.app/",
   },
 ];
 
@@ -123,4 +121,5 @@ export const ABOUT_TEXT =
   "Soy un desarrollador de software apasionado por transformar ideas complejas en soluciones digitales sólidas, funcionales y bien estructuradas. Me enfoco en comprender a fondo cada problema para diseñar sistemas escalables, seguros e intuitivos, cuidando tanto la lógica interna como la experiencia final de cada usuario. Trabajo bajo buenas prácticas de ingeniería, aprendizaje continuo y atención al detalle para entregar productos confiables de principio a fin.";
 
 export const CONTACT_EMAIL = "dmoya1873@gmail.com";
+export const CONTACT_PHONE = "+57 313 573 2066";
 export const GITHUB_URL = "https://github.com/DMoya-max";
