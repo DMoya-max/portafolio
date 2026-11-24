@@ -1,0 +1,134 @@
+@import "tailwindcss";
+
+@theme {
+  --color-obsidian: #09090b;
+  --color-surface: #121215;
+  --color-edge: #27272a;
+  --color-smoke: #f4f4f5;
+  --color-steel: #a1a1aa;
+  --color-ruby: #dc2626;
+  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
+}
+
+:root {
+  color-scheme: dark;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: #09090b;
+  color: #f4f4f5;
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+::selection {
+  background: rgba(220, 38, 38, 0.35);
+  color: #fff;
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #09090b;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #3f3f46;
+  border-radius: 999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #dc2626;
+}
+
+.text-gradient-ruby {
+  background: linear-gradient(105deg, #f87171 0%, #dc2626 42%, #991b1b 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.glass {
+  background: linear-gradient(145deg, rgba(18, 18, 21, 0.9), rgba(9, 9, 11, 0.72));
+  border: 1px solid rgba(39, 39, 42, 0.9);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.grid-overlay {
+  background-image:
+    linear-gradient(to right, rgba(113, 113, 122, 0.07) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(113, 113, 122, 0.07) 1px, transparent 1px);
+  background-size: 64px 64px;
+  mask-image: radial-gradient(ellipse 70% 60% at 50% 40%, #000 20%, transparent 100%);
+  -webkit-mask-image: radial-gradient(ellipse 70% 60% at 50% 40%, #000 20%, transparent 100%);
+}
+
+.glow-ruby {
+  box-shadow:
+    0 0 0 1px rgba(220, 38, 38, 0.28),
+    0 14px 50px -16px rgba(220, 38, 38, 0.55),
+    inset 0 1px 0 rgba(248, 113, 113, 0.14);
+}
+
+.metal-edge {
+  border-image: linear-gradient(135deg, #7f1d1d, #f87171 40%, #991b1b 70%, #27272a) 1;
+}
+
+.scanline {
+  background: repeating-linear-gradient(
+    0deg,
+    rgba(255, 255, 255, 0.018) 0px,
+    rgba(255, 255, 255, 0.018) 1px,
+    transparent 1px,
+    transparent 4px
+  );
+}
+
+@keyframes pulse-glow {
+  0%,
+  100% {
+    opacity: 0.45;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.85;
+    transform: scale(1.08);
+  }
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 4s ease-in-out infinite;
+}
+
+@keyframes marquee-x {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-marquee {
+  animation: marquee-x 28s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  .animate-marquee,
+  .animate-pulse-glow {
+    animation: none;
+  }
+}
