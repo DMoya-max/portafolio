@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { motion } from "framer-motion";
-import { ArrowUpRight, Boxes, ShoppingBag } from "lucide-react";
+import { ArrowUpRight, Boxes, Github, ShoppingBag } from "lucide-react";
 import { projects } from "@/lib/data";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 
@@ -96,51 +96,62 @@ export function ProjectsSection() {
             const Icon = project.kind === "dashboard" ? Boxes : ShoppingBag;
             return (
               <motion.div key={project.name} variants={item} className="h-full">
-                <a
-                  href={project.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="group block h-full rounded-xl outline-none focus-visible:ring-2 focus-visible:ring-red-500/70"
-                  aria-label={`Ver demo de ${project.name} en una pestaña nueva`}
-                >
-                  <article className="flex h-full flex-col overflow-hidden rounded-xl border-b border-l border-r border-zinc-800/90 border-t-2 border-t-red-500/70 bg-surface transition-all duration-300 hover:-translate-y-2 hover:border-red-500/60 hover:shadow-[0_12px_35px_rgba(220,38,38,0.16)]">
-                    <ProjectVisual kind={project.kind} index={index} />
+                <article className="group flex h-full flex-col overflow-hidden rounded-xl border-b border-l border-r border-zinc-800/90 border-t-2 border-t-red-500/70 bg-surface transition-all duration-300 hover:-translate-y-2 hover:border-red-500/60 hover:shadow-[0_12px_35px_rgba(220,38,38,0.16)] focus-within:ring-2 focus-within:ring-red-500/70">
+                  <ProjectVisual kind={project.kind} index={index} />
 
-                    <div className="flex flex-1 flex-col p-6 sm:p-7">
-                      <div className="mb-3 flex items-start justify-between gap-4">
-                        <div>
-                          <div className="mb-1 flex items-center gap-2">
-                            <Icon size={16} className="text-ruby" />
-                            <h3 className="text-xl font-semibold text-smoke">{project.name}</h3>
-                          </div>
-                          <p className="font-mono text-[11px] uppercase tracking-wider text-red-200/70">
-                            {project.subtitle}
-                          </p>
-                        </div>
-                        <span className="inline-flex shrink-0 items-center gap-2 rounded-lg border border-red-500/40 bg-red-600/15 px-3.5 py-2 font-mono text-xs text-red-400 transition-all duration-300 group-hover:bg-red-600 group-hover:text-white">
-                          Ver demo
-                          <ArrowUpRight
-                            size={14}
-                            className="transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
-                          />
-                        </span>
+                  <div className="flex flex-1 flex-col p-6 sm:p-7">
+                    <div className="mb-3">
+                      <div className="mb-1 flex items-center gap-2">
+                        <Icon size={16} className="text-ruby" />
+                        <h3 className="text-xl font-semibold text-smoke">{project.name}</h3>
                       </div>
-
-                      <p className="text-sm leading-relaxed text-steel">{project.description}</p>
-
-                      <div className="mt-5 flex flex-wrap gap-2 border-t border-edge/70 pt-5">
-                        {project.stack.map((tech) => (
-                          <span
-                            key={tech}
-                            className="rounded-full border border-red-500/20 bg-red-950/25 px-2.5 py-1 font-mono text-[11px] text-zinc-300 transition-colors group-hover:border-red-500/40"
-                          >
-                            {tech}
-                          </span>
-                        ))}
-                      </div>
+                      <p className="font-mono text-[11px] uppercase tracking-wider text-red-200/70">
+                        {project.subtitle}
+                      </p>
                     </div>
-                  </article>
-                </a>
+
+                    <p className="text-sm leading-relaxed text-steel">{project.description}</p>
+
+                    <div className="mt-5 flex flex-wrap items-center gap-2.5">
+                      <a
+                        href={project.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        data-cursor-text="DEMO"
+                        aria-label={`Ver demo de ${project.name} en una pestaña nueva`}
+                        className="inline-flex shrink-0 items-center gap-2 rounded-xl border border-red-500/40 bg-red-950/30 px-3.5 py-2 font-mono text-xs text-red-300 transition-all duration-200 hover:border-red-500/70 hover:bg-red-900/40 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500/70"
+                      >
+                        Ver demo
+                        <ArrowUpRight
+                          size={14}
+                          className="transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
+                        />
+                      </a>
+                      <a
+                        href={project.repoUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        data-cursor-text="CÓDIGO"
+                        aria-label={`Ver código de ${project.name} en GitHub en una pestaña nueva`}
+                        className="inline-flex items-center gap-1.5 rounded-xl border border-zinc-700/80 bg-[#09090B]/90 px-3.5 py-2 text-xs font-mono text-zinc-300 transition-all duration-200 hover:border-red-500/50 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500/70"
+                      >
+                        <Github size={14} />
+                        Ver código
+                      </a>
+                    </div>
+
+                    <div className="mt-5 flex flex-wrap gap-2 border-t border-edge/70 pt-5">
+                      {project.stack.map((tech) => (
+                        <span
+                          key={tech}
+                          className="rounded-full border border-red-500/20 bg-red-950/25 px-2.5 py-1 font-mono text-[11px] text-zinc-300 transition-colors group-hover:border-red-500/40"
+                        >
+                          {tech}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                </article>
               </motion.div>
             );
           })}

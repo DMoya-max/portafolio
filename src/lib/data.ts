@@ -103,6 +103,7 @@ export const projects = [
     stack: ["Python", "Django", "Vercel", "Supabase", "Git/GitHub"],
     kind: "dashboard" as const,
     url: "https://sigif-final.vercel.app/",
+    repoUrl: "https://github.com/DMoya-max/sigif-final",
   },
   {
     name: "Velvet Beauty",
@@ -112,6 +113,7 @@ export const projects = [
     stack: ["HTML5", "CSS3", "JavaScript", "LocalStorage", "Netlify"],
     kind: "commerce" as const,
     url: "https://velvetbeauty-catalogo.netlify.app/",
+    repoUrl: "https://github.com/DMoya-max/Velvet-Beauty",
   },
 ];
 
