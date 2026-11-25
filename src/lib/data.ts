@@ -45,8 +45,8 @@ export const techGroups: TechGroup[] = [
     ],
   },
   {
-    category: "Herramientas y despliegue",
-    description: "Colaboración, contenedores y entrega continua.",
+    category: "Herramientas",
+    description: "Control de versiones, colaboración y contenedores.",
     items: [
       { name: "Git", iconKey: "git", detail: "Control de versiones" },
       { name: "GitHub", iconKey: "github", detail: "Colaboración" },
@@ -100,7 +100,7 @@ export const projects = [
     subtitle: "Sistema Integral de Gestión de Inventarios y Facturación",
     description:
       "Plataforma empresarial colaborativa para el control de inventarios, gestión de productos y procesos de facturación. Desarrollo de vistas y lógica backend, migración de controladores y respaldo de datos en la nube.",
-    stack: ["Python", "Django", "Node.js", "MongoDB Atlas", "Git/GitHub"],
+    stack: ["Python", "Django", "Vercel", "Git/GitHub"],
     kind: "dashboard" as const,
     url: "https://sigif-final.vercel.app/",
   },

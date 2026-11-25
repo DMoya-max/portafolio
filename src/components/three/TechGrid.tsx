@@ -26,14 +26,14 @@ const GROUP_LABELS: Record<string, string> = {
   Backend: "// BACKEND",
   "Frontend / Móvil": "// FRONTEND & MÓVIL",
   "Bases de datos": "// BASES DE DATOS",
-  "Herramientas y despliegue": "// HERRAMIENTAS Y DESPLIEGUE",
+  Herramientas: "// HERRAMIENTAS",
 };
 
 function techLabel(category: string, name: string) {
   if (category === "Backend") return "BACKEND";
   if (category === "Frontend / Móvil") return name === "React Native" ? "MÓVIL" : "FRONTEND";
   if (category === "Bases de datos") return name === "MongoDB" ? "NOSQL" : "SQL";
-  return "DEVOPS / TOOLS";
+  return "HERRAMIENTAS";
 }
 
 function FallbackIcon({ iconKey }: { iconKey: string }) {
