@@ -3,7 +3,6 @@
 import Image from "next/image";
 import { motion } from "framer-motion";
 import { ArrowUpRight, Boxes, ShoppingBag } from "lucide-react";
-import { assetPath } from "@/lib/base-path";
 import { projects } from "@/lib/data";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 
@@ -46,7 +45,7 @@ function ProjectVisual({
       />
 
       <Image
-        src={assetPath(isDashboard ? "/images/logo123.png" : "/images/logo-VB.jpg")}
+        src={isDashboard ? "/images/logo123.png" : "/images/logo-VB.jpg"}
         alt={isDashboard ? "Logo ERS-SIGIF" : "Logo Velvet Beauty"}
         fill
         sizes="(max-width: 768px) 100vw, 50vw"

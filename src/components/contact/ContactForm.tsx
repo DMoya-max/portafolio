@@ -79,25 +79,17 @@ export function ContactForm() {
     setFeedback("");
 
     try {
-      const response = await fetch("https://formsubmit.co/ajax/dmoya1873@gmail.com", {
+      const response = await fetch("/api/contact", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json",
-        },
-        body: JSON.stringify({
-          name: values.nombre,
-          email: values.email,
-          subject: values.asunto || "Nuevo mensaje desde tu Portafolio",
-          message: values.mensaje,
-          _subject: `Portafolio Moya: ${values.asunto || "Nuevo contacto"}`,
-          _captcha: "false",
-        }),
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(result.data),
       });
+      const data: { ok?: boolean; message?: string } = await response.json();
 
-      const data: { success?: string; message?: string } = await response.json();
-      if (!response.ok || data.success === "false") {
-        throw new Error(data.message || "Error al enviar el mensaje");
+      if (!response.ok || !data.ok) {
+        setStatus("error");
+        setFeedback(data.message ?? "No fue posible enviar el mensaje. Intenta de nuevo.");
+        return;
       }
 
       setStatus("success");
@@ -106,12 +98,10 @@ export function ContactForm() {
       setTouched({});
       setSubmitted(false);
       setErrors({});
-    } catch (error) {
+    } catch {
       setStatus("error");
       setFeedback(
-        error instanceof Error && error.message
-          ? error.message
-          : "No se pudo conectar con el servidor de correo. Revisa tu conexión e inténtalo de nuevo.",
+        "No se pudo conectar con el servidor de correo. Revisa tu conexión e inténtalo de nuevo.",
       );
     }
   };

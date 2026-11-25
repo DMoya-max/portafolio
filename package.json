@@ -7,8 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint .",
-    "typecheck": "tsc --noEmit",
-    "deploy": "next build && node -e \"require('fs').writeFileSync('out/.nojekyll', '')\" && gh-pages -d out -t"
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@react-three/drei": "^10.7.6",
@@ -33,7 +32,6 @@
     "@types/three": "^0.180.0",
     "eslint": "^9.36.0",
     "eslint-config-next": "^15.5.3",
-    "gh-pages": "^6.3.0",
     "tailwindcss": "^4.1.13",
     "typescript": "^5.9.2"
   }
