@@ -1,11 +1,9 @@
-/** Nombre del repositorio en GitHub Actions (por ejemplo, "portafolio"). */
-const repoName = process.env.GITHUB_REPOSITORY?.split("/")[1] ?? "";
-const isUserSite = repoName.endsWith(".github.io");
-const actionsBasePath = process.env.GITHUB_ACTIONS && !isUserSite ? `/${repoName}` : "";
+/** Debe coincidir con `basePath` en next.config.ts. */
+const DEFAULT_BASE_PATH = "/portafolio";
 
 /** Ruta base del sitio: "" para DMoya-max.github.io, /<repo> para sitios de proyecto. */
 export const BASE_PATH = (
-  process.env.NEXT_PUBLIC_BASE_PATH ?? actionsBasePath
+  process.env.NEXT_PUBLIC_BASE_PATH ?? DEFAULT_BASE_PATH
 ).replace(/\/$/, "");
 
 /** Antepone la ruta base a recursos servidos desde /public. */
