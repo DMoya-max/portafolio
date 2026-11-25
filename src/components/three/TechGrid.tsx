@@ -62,6 +62,7 @@ function FallbackIcon({ iconKey }: { iconKey: string }) {
 
 export function TechGrid() {
   const [webglAvailable, setWebglAvailable] = useState(false);
+  const [hovered, setHovered] = useState<string | null>(null);
 
   useEffect(() => {
     try {
@@ -127,6 +128,8 @@ export function TechGrid() {
                   <motion.div
                     key={id}
                     variants={item}
+                    onPointerEnter={() => setHovered(id)}
+                    onPointerLeave={() => setHovered(null)}
                     className="group relative overflow-hidden rounded-xl border-b border-l border-r border-zinc-800/90 border-t-2 border-t-red-500/70 bg-[#121215]/95 backdrop-blur-md transition-all duration-300 hover:-translate-y-1.5 hover:border-red-500/60 hover:shadow-[0_12px_30px_rgba(220,38,38,0.14)]"
                   >
                     <div
@@ -140,7 +143,7 @@ export function TechGrid() {
 
                     {webglAvailable ? (
                       <View className="relative h-28 w-full sm:h-32">
-                        <TechIcon3D iconKey={tech.iconKey} />
+                        <TechIcon3D iconKey={tech.iconKey} hovered={hovered === id} />
                       </View>
                     ) : (
                       <FallbackIcon iconKey={tech.iconKey} />

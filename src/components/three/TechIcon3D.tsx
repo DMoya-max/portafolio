@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useMemo } from "react";
+import { useFrame } from "@react-three/fiber";
+import { useEffect, useMemo, useRef } from "react";
 import * as THREE from "three";
 import { SVGLoader } from "three/examples/jsm/loaders/SVGLoader.js";
 import { getBrandPaths } from "@/lib/brand-paths";
@@ -82,13 +83,22 @@ function createExtrudedIcon(iconKey: string): IconPart[] {
   });
 }
 
-export function TechIcon3D({ iconKey }: { iconKey: string }) {
+export function TechIcon3D({ iconKey, hovered = false }: { iconKey: string; hovered?: boolean }) {
   const parts = useMemo(() => createExtrudedIcon(iconKey), [iconKey]);
+  const groupRef = useRef<THREE.Group>(null);
 
   useEffect(
     () => () => parts.forEach((part) => part.geometry.dispose()),
     [parts],
   );
+
+  useFrame((_, delta) => {
+    const group = groupRef.current;
+    if (!group) return;
+    group.rotation.x = 0;
+    group.rotation.z = 0;
+    group.rotation.y += delta * (hovered ? 0.85 : 0.45);
+  });
 
   return (
     <>
@@ -96,7 +106,7 @@ export function TechIcon3D({ iconKey }: { iconKey: string }) {
       <directionalLight position={[2, 3, 4]} color="#ffffff" intensity={1.0} />
       <pointLight position={[-2, -1, 3]} color="#DC2626" intensity={0.9} />
 
-      <group rotation={[0, 0, 0]} scale={1.05}>
+      <group ref={groupRef} rotation={[0, 0, 0]} scale={1.05}>
         {parts.map((part, index) => (
           <mesh key={index} geometry={part.geometry}>
             <meshStandardMaterial
