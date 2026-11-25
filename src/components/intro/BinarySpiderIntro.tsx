@@ -10,7 +10,7 @@ type RainMeta = {
   alpha: number;
 };
 
-type Glyph = {
+export type Glyph = {
   x: number;
   y: number;
   ex: number;
@@ -23,7 +23,7 @@ type Glyph = {
   rain?: RainMeta;
 };
 
-type RasterizedParticle = {
+export type RasterizedParticle = {
   originX: number;
   originY: number;
   char: string;

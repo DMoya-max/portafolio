@@ -18,7 +18,6 @@ export const techGroups: TechGroup[] = [
       { name: "Python", iconKey: "python", detail: "Lenguaje base" },
       { name: "Django", iconKey: "django", detail: "Framework web" },
       { name: "Node.js", iconKey: "nodedotjs", detail: "Runtime y APIs" },
-      { name: "Nest.js", iconKey: "nestjs", detail: "Arquitectura backend" },
     ],
   },
   {
@@ -26,10 +25,8 @@ export const techGroups: TechGroup[] = [
     description: "Interfaces modernas, componentes y experiencias fluidas en web y móvil.",
     items: [
       { name: "React", iconKey: "react", detail: "UI declarativa" },
-      { name: "React Native", iconKey: "reactnative", detail: "Apps móviles" },
       { name: "Next.js", iconKey: "nextdotjs", detail: "App Router" },
       { name: "JavaScript", iconKey: "javascript", detail: "ES6+" },
-      { name: "TypeScript", iconKey: "typescript", detail: "Tipado estático" },
       { name: "HTML5", iconKey: "html5", detail: "Semántica web" },
       { name: "CSS3", iconKey: "css", detail: "Estilos y layout" },
     ],
