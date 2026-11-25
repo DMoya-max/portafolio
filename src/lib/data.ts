@@ -100,7 +100,7 @@ export const projects = [
     subtitle: "Sistema Integral de Gestión de Inventarios y Facturación",
     description:
       "Plataforma empresarial colaborativa para el control de inventarios, gestión de productos y procesos de facturación. Desarrollo de vistas y lógica backend, migración de controladores y respaldo de datos en la nube.",
-    stack: ["Python", "Django", "Vercel", "Git/GitHub"],
+    stack: ["Python", "Django", "Vercel", "Supabase", "Git/GitHub"],
     kind: "dashboard" as const,
     url: "https://sigif-final.vercel.app/",
   },
