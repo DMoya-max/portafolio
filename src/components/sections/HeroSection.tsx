@@ -20,7 +20,7 @@ const item = {
 
 export function HeroSection() {
   return (
-    <div className="relative flex min-h-screen h-auto w-full flex-col items-center justify-center px-5 pt-28 pb-20 sm:px-8">
+    <div className="relative flex min-h-screen h-auto w-full flex-col items-center justify-center overflow-x-clip px-5 pt-28 pb-20 sm:px-8">
       <div className="grid-overlay pointer-events-none absolute inset-0" aria-hidden="true" />
       <div
         className="pointer-events-none absolute -left-40 top-1/3 h-[460px] w-[460px] rounded-full bg-ruby/10 blur-[140px] animate-pulse-glow"

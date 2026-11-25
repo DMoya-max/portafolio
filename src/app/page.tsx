@@ -19,7 +19,7 @@ export default function Home() {
         <div className="relative z-20 bg-transparent">
           <section
             id="inicio"
-            className="relative scroll-mt-0 border-t border-edge/60 bg-transparent"
+            className="relative scroll-mt-20 border-t border-edge/60 bg-transparent"
           >
             <HeroSection />
           </section>

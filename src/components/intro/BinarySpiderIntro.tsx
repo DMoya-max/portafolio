@@ -327,7 +327,7 @@ function createDigitSprite(char: "0" | "1", muted = false) {
 
 export function BinarySpiderIntro() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const hintRef = useRef<HTMLDivElement>(null);
+  const hintRef = useRef<HTMLButtonElement>(null);
   const targetProgress = useRef(0);
 
   useEffect(() => {
@@ -498,17 +498,22 @@ export function BinarySpiderIntro() {
   }, []);
 
   return (
-    <div className="pointer-events-none fixed inset-0 z-10 h-screen w-screen">
-      <canvas ref={canvasRef} className="block h-screen w-screen" />
-      <div
+    <div className="pointer-events-none fixed inset-0 z-10 h-[100dvh] w-full">
+      <canvas ref={canvasRef} className="block h-[100dvh] w-full" />
+      <button
         ref={hintRef}
-        className="absolute inset-x-0 bottom-8 flex flex-col items-center gap-3 px-4 text-center sm:bottom-12"
+        type="button"
+        aria-label="Desliza para explorar"
+        onClick={() => {
+          document.getElementById("inicio")?.scrollIntoView({ behavior: "smooth" });
+        }}
+        className="pointer-events-auto absolute bottom-8 left-1/2 z-30 flex w-max max-w-[90vw] -translate-x-1/2 flex-col items-center gap-3 text-center sm:bottom-10"
       >
         <Mouse size={20} className="animate-pulse text-ruby sm:size-6" strokeWidth={1.4} />
-        <p className="font-mono text-xs tracking-[0.12em] text-red-200/90 sm:text-sm sm:tracking-[0.24em]">
+        <span className="font-mono text-xs tracking-[0.12em] text-red-200/90 sm:text-sm sm:tracking-[0.24em]">
           [ DESLIZA PARA EXPLORAR ]
-        </p>
-      </div>
+        </span>
+      </button>
     </div>
   );
 }

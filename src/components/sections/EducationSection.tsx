@@ -131,37 +131,37 @@ export function EducationSection() {
             </div>
           </div>
 
-          <motion.div variants={item} className="mt-14 flex items-center gap-4">
-            <span className="shrink-0 font-mono text-[11px] uppercase tracking-[0.18em] text-ruby/80">
+          <motion.div variants={item} className="mt-14 flex flex-wrap items-center gap-3">
+            <span className="min-w-0 max-w-full break-words font-mono text-xs uppercase tracking-[0.14em] text-ruby/80 sm:text-sm">
               {"// CERTIFICACIONES Y CURSOS COMPLEMENTARIOS"}
             </span>
             <span
-              className="h-px flex-1 bg-gradient-to-r from-red-500/40 to-transparent"
+              className="h-px min-w-[2rem] flex-1 bg-gradient-to-r from-red-500/40 to-transparent"
               aria-hidden="true"
             />
           </motion.div>
 
-          <div className="mt-6 grid grid-cols-1 gap-6 md:grid-cols-2">
+          <div className="mt-6 grid w-full grid-cols-1 gap-4 sm:gap-6 md:grid-cols-2">
             {complementaryCourses.map((course, index) => {
               const Icon = COURSE_ICONS[index % COURSE_ICONS.length];
               return (
-                <motion.div key={course.title} variants={item} className="h-full">
-                  <article className="group relative flex h-full flex-col overflow-hidden rounded-xl border-y border-r border-l-2 border-edge/80 border-l-red-500/70 bg-surface p-6 transition-all duration-300 hover:-translate-y-1.5 hover:border-red-500/60 sm:p-7">
+                <motion.div key={course.title} variants={item} className="h-full min-w-0 w-full">
+                  <article className="group relative flex h-full w-full min-w-0 flex-col overflow-hidden rounded-xl border-y border-r border-l-2 border-edge/80 border-l-red-500/70 bg-surface p-6 transition-all duration-300 hover:-translate-y-1.5 hover:border-red-500/60 sm:p-7">
                     <div className={GLOW} aria-hidden="true" />
 
-                    <div className="relative flex items-start justify-between gap-3">
-                      <div className="flex items-start gap-4">
+                    <div className="relative flex flex-wrap items-start justify-between gap-2">
+                      <div className="flex min-w-0 items-start gap-3 sm:gap-4">
                         <span className={ICON_BOX}>
                           <Icon size={19} strokeWidth={1.6} />
                         </span>
-                        <div>
+                        <div className="min-w-0 flex-1">
                           <p className="mb-1 font-mono text-[10px] uppercase tracking-[0.2em] text-ruby/80">
                             CURSO COMPLEMENTARIO
                           </p>
-                          <h3 className="text-lg font-semibold leading-snug text-smoke">
+                          <h3 className="break-words text-lg font-semibold leading-snug text-smoke">
                             {course.title}
                           </h3>
-                          <p className="mt-1 text-sm font-medium text-red-200/80">
+                          <p className="mt-1 break-words text-sm font-medium text-red-200/80">
                             {course.subtitle}
                           </p>
                         </div>
@@ -171,7 +171,7 @@ export function EducationSection() {
                       </span>
                     </div>
 
-                    <p className="relative mt-5 border-t border-edge/70 pt-5 text-sm leading-relaxed text-steel">
+                    <p className="relative mt-5 min-w-0 break-words border-t border-edge/70 pt-5 text-sm leading-relaxed text-steel">
                       {course.description}
                     </p>
                   </article>

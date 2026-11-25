@@ -2,11 +2,12 @@
 
 import { AnimatePresence, motion } from "framer-motion";
 import { Menu, X } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useState, type MouseEvent } from "react";
 
 const NAV_LINKS = [
   { href: "#inicio", label: "Inicio" },
   { href: "#tecnologias", label: "Tecnologías" },
+  { href: "#formacion", label: "Formación" },
   { href: "#proyectos", label: "Proyectos" },
   { href: "#contacto", label: "Contacto" },
 ];
@@ -39,6 +40,19 @@ export function Navbar() {
     sections.forEach((section) => observer.observe(section));
     return () => observer.disconnect();
   }, []);
+
+  const handleMobileNavClick = (event: MouseEvent<HTMLAnchorElement>, sectionId: string) => {
+    event.preventDefault();
+    setOpen(false);
+    document.body.style.overflow = "";
+    setTimeout(() => {
+      const target = document.getElementById(sectionId);
+      if (target) {
+        target.scrollIntoView({ behavior: "smooth", block: "start" });
+        window.history.pushState(null, "", `#${sectionId}`);
+      }
+    }, 80);
+  };
 
   return (
     <header className="fixed inset-x-0 top-0 z-50">
@@ -105,14 +119,14 @@ export function Navbar() {
               initial={{ opacity: 0, height: 0 }}
               animate={{ opacity: 1, height: "auto" }}
               exit={{ opacity: 0, height: 0 }}
-              className="overflow-hidden border-t border-ruby/60 bg-[#09090B]/98 shadow-[0_20px_50px_-20px_rgba(220,38,38,0.45)] backdrop-blur-xl md:hidden"
+              className="z-50 pointer-events-auto overflow-hidden border-t border-ruby/60 bg-[#09090B]/98 shadow-[0_20px_50px_-20px_rgba(220,38,38,0.45)] backdrop-blur-xl md:hidden"
             >
               <div className="flex flex-col px-5 py-2">
                 {NAV_LINKS.map((link) => (
                   <a
                     key={link.href}
                     href={link.href}
-                    onClick={() => setOpen(false)}
+                    onClick={(event) => handleMobileNavClick(event, link.href.slice(1))}
                     className={`min-h-[44px] border-b border-ruby/25 py-3 font-mono text-xs uppercase tracking-[0.18em] last:border-b-0 ${
                       active === link.href ? "text-ruby" : "text-steel"
                     }`}
@@ -122,7 +136,7 @@ export function Navbar() {
                 ))}
                 <a
                   href="#contacto"
-                  onClick={() => setOpen(false)}
+                  onClick={(event) => handleMobileNavClick(event, "contacto")}
                   className="my-2 flex min-h-[44px] items-center justify-center rounded-md border border-ruby/60 bg-ruby/15 px-4 py-3 text-sm font-medium text-red-100 transition-colors hover:bg-ruby hover:text-white"
                 >
                   Hablemos
